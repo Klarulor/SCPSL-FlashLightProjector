@@ -60,6 +60,7 @@ namespace FlashLightProjector
                 var toy = CreateLightSource(Vector3.zero, Vector3.one, Vector3.zero);
                 toy.NetworkLightRange = FlashlightMathFunction(i + 1);
                 toy.NetworkLightIntensity = Plugin.Instance.Config.LightIntensity;
+                toy.NetworkLightShadows = Plugin.Instance.Config.LightShadows;
                 toy.gameObject.transform.parent = owner.CameraTransform;
                 toy.transform.localPosition = Vector3.forward * i * Plugin.Instance.Config.LightSourceDistance;
                 NetworkServer.Spawn(toy.gameObject);

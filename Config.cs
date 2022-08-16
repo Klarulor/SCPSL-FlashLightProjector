@@ -27,5 +27,8 @@ namespace FlashLightProjector
         
         [Description("Math func expanse")]
         public float MathFuncExpanseValue { get; set; } = 1;
+        
+        [Description("Need a shadow")]
+        public bool LightShadows { get; set; } = false;
     }
 }
