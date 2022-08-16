@@ -23,11 +23,19 @@ namespace FlashLightProjector
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers += EventHandlers.OnWaitingForPlayers;
             Exiled.Events.Handlers.Player.TogglingFlashlight += EventHandlers.OnFlashLight;
+            Exiled.Events.Handlers.Player.Left += EventHandlers.OnLeft;
+            Exiled.Events.Handlers.Player.Died += EventHandlers.OnDied;
+            Exiled.Events.Handlers.Player.DroppingItem += EventHandlers.OnDroppingItem;
+            Exiled.Events.Handlers.Player.ChangingRole += EventHandlers.OnChangingRole;
         }
         private void UnregisterEvents()
         {
             Exiled.Events.Handlers.Server.WaitingForPlayers -= EventHandlers.OnWaitingForPlayers;
             Exiled.Events.Handlers.Player.TogglingFlashlight -= EventHandlers.OnFlashLight;
+            Exiled.Events.Handlers.Player.Left -= EventHandlers.OnLeft;
+            Exiled.Events.Handlers.Player.Died -= EventHandlers.OnDied;
+            Exiled.Events.Handlers.Player.DroppingItem -= EventHandlers.OnDroppingItem;
+            Exiled.Events.Handlers.Player.ChangingRole -= EventHandlers.OnChangingRole;
         }
     }
 }

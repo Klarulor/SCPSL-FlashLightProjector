@@ -9,7 +9,7 @@ using Exiled.Events.EventArgs;
 using Mirror;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
+    
 namespace FlashLightProjector
 {
     internal class EventHandlers
@@ -33,19 +33,7 @@ namespace FlashLightProjector
                     }
                 }
                 else
-                {
-                    if (!Plugin.Instance.Config.NetworkServerObjectSaver)
-                    {
-                        foreach (var obj in _playerLights[ev.Player])
-                        {
-                            NetworkServer.UnSpawn(obj.gameObject);
-                            _playerLights[ev.Player] = new LightSourceToy[Plugin.Instance.Config.LightSourceCount];
-                        }
-                    }
-                    else
-                        foreach (var light in _playerLights[ev.Player])
-                            light.NetworkLightRange = 0;
-                }
+                    TryTurnOffFlashlight(ev.Player);
             }
             catch (Exception error)
             {
@@ -73,7 +61,7 @@ namespace FlashLightProjector
                 toy.NetworkLightRange = FlashlightMathFunction(i + 1);
                 toy.NetworkLightIntensity = Plugin.Instance.Config.LightIntensity;
                 toy.gameObject.transform.parent = owner.CameraTransform;
-                toy.transform.localPosition = owner.CameraTransform.forward * i * Plugin.Instance.Config.LightSourceDistance;
+                toy.transform.localPosition = Vector3.forward * i * Plugin.Instance.Config.LightSourceDistance;
                 NetworkServer.Spawn(toy.gameObject);
                 _playerLights[owner][i] = toy;
             }
@@ -87,5 +75,45 @@ namespace FlashLightProjector
         }
 
         private float FlashlightMathFunction(int x) => (Plugin.Instance.Config.MathFuncExpanseValue / x) * Plugin.Instance.Config.LightRange;
+
+        private void TryTurnOffFlashlight(Player target)
+        {
+            if (_playerLights.ContainsKey(target) && _playerLights[target][0] != null)
+                if (!Plugin.Instance.Config.NetworkServerObjectSaver)
+                {
+                    foreach (var obj in _playerLights[target])
+                    {
+                        NetworkServer.UnSpawn(obj.gameObject);
+                        _playerLights[target] = new LightSourceToy[Plugin.Instance.Config.LightSourceCount];
+                    }
+                }
+                else
+                    foreach (var light in _playerLights[target])
+                        light.NetworkLightRange = 0;
+        }
+
+        internal void OnLeft(LeftEventArgs ev)
+        {
+            if(_playerLights.ContainsKey(ev.Player))
+                TryTurnOffFlashlight(ev.Player);
+        }
+
+        public void OnDied(DiedEventArgs ev)
+        {
+            if(_playerLights.ContainsKey(ev.Target))
+                TryTurnOffFlashlight(ev.Target);
+        }
+
+        public void OnDroppingItem(DroppingItemEventArgs ev)
+        {
+            if(ev.Item.Type == ItemType.Flashlight && _playerLights.ContainsKey(ev.Player))
+                TryTurnOffFlashlight(ev.Player);
+        }
+
+        public void OnChangingRole(ChangingRoleEventArgs ev)
+        {
+            if(_playerLights.ContainsKey(ev.Player))
+                TryTurnOffFlashlight(ev.Player);
+        }
     }
 }
